@@ -141,7 +141,7 @@ body.view-active .btn-p {
 .product-thumbnail img:hover { 
     filter: grayscale(0%); 
     opacity: 1; 
-    transform: scale(1.1); 
+    transform: scale(1.3); 
 }
 
 /* ================================================================
