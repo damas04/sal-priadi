@@ -6,125 +6,226 @@ const fullImg = document.getElementById("full-img");
 const fullTitle = document.getElementById("full-title");
 const closeBtn = document.getElementById("close-btn");
 const shopBtn = document.getElementById("shop-btn");
+const trailContainer = document.getElementById("trail-container");
 
-let mouseX = window.innerWidth / 2;
-let mouseY = window.innerHeight / 2;
-let idleTimer;
+// Posisi mouse target dan posisi mouse saat ini (untuk smoothing)
+let targetX = window.innerWidth / 2;
+let targetY = window.innerHeight / 2;
+let currentX = targetX;
+let currentY = targetY;
 
-// --- FUNGSI ASLI: MOUSE TRAIL & CHECK OVER ELEMENT ---
-const coords = Array.from({ length: layers.length }, () => ({ x: mouseX, y: mouseY }));
+// Posisi terakhir partikel muncul (Kunci agar tidak mengacak di awal)
+let lastSpawnPos = { x: targetX, y: targetY };
+
+/* =========================
+   LAYER FOLLOW (PARALLAX)
+========================= */
+const coords = Array.from({ length: layers.length }, () => ({ x: targetX, y: targetY }));
 
 function isMouseOverElement(el, x, y) {
+    if (!el) return false;
     const rect = el.getBoundingClientRect();
-    return (x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom);
+    return x >= rect.left && x <= rect.right && y >= rect.top && y <= rect.bottom;
 }
 
-function updateMouse(x, y) {
-    mouseX = x;
-    mouseY = y;
-    const overNavbar = isMouseOverElement(navbar, mouseX, mouseY);
-    const overThumb = isMouseOverElement(thumb, mouseX, mouseY);
+function updateMousePositions(x, y) {
+    targetX = x;
+    targetY = y;
+
+    const overNavbar = isMouseOverElement(navbar, x, y);
+    const overThumb = isMouseOverElement(thumb, x, y);
 
     if (overNavbar || overThumb) {
         layers.forEach(l => l.classList.remove("active"));
     } else {
         layers.forEach(l => l.classList.add("active"));
-        clearTimeout(idleTimer);
-        idleTimer = setTimeout(() => {
-            layers.forEach(l => l.classList.remove("active"));
-        }, 500);
     }
 }
 
-document.addEventListener("mousemove", (e) => updateMouse(e.clientX, e.clientY));
-document.addEventListener("touchstart", (e) => updateMouse(e.touches[0].clientX, e.touches[0].clientY));
+function animateLayers() {
+    currentX += (targetX - currentX) * 0.1;
+    currentY += (targetY - currentY) * 0.1;
 
-function animate() {
     layers.forEach((layer, i) => {
-        const speed = 0.07 + (i * 0.05);
-        coords[i].x += (mouseX - coords[i].x) * speed;
-        coords[i].y += (mouseY - coords[i].y) * speed;
+        const speed = 0.05 + (i * 0.03); 
+        coords[i].x += (targetX - coords[i].x) * speed;
+        coords[i].y += (targetY - coords[i].y) * speed;
+
         layer.style.transform = `translate3d(${coords[i].x}px, ${coords[i].y}px, 0) translate(-50%, -50%)`;
     });
-    requestAnimationFrame(animate);
-}
-animate();
 
-// --- FUNGSI BARU: INFINITE LOOP LOGIC ---
+    requestAnimationFrame(animateLayers);
+}
+animateLayers();
+
+/* =========================
+   PARTICLE TRAIL (OPTIMIZED)
+========================= */
+const images = [
+    "assets/product1.png",
+    "assets/product2.png",
+    "assets/product3.png",
+    "assets/product4.png"
+];
+
+let particles = [];
+const maxParticles = 30;
+let imgIndex = 0;
+
+function getNextImage() {
+    const img = images[imgIndex];
+    imgIndex = (imgIndex + 1) % images.length;
+    return img;
+}
+
+function createParticle(x, y) {
+    const distance = Math.hypot(x - lastSpawnPos.x, y - lastSpawnPos.y);
+    const minDistance = 90; 
+
+    if (distance < minDistance) return; 
+    
+    lastSpawnPos = { x, y };
+
+    if (isMouseOverElement(navbar, x, y) || isMouseOverElement(thumb, x, y)) return;
+
+    const img = document.createElement("img");
+    img.className = "trail-img";
+    img.src = getNextImage();
+
+    const heightSize = 230; 
+    img.style.height = heightSize + "px";
+    img.style.width = "auto"; 
+    img.style.objectFit = "contain"; 
+
+    const rotation = (Math.random() - 0.5) * 0;
+    
+    trailContainer.appendChild(img);
+
+    particles.push({
+        el: img,
+        x: x,
+        y: y,
+        life: 1,
+        rotation: rotation
+    });
+
+    if (particles.length > maxParticles) {
+        const old = particles.shift();
+        if(old.el) old.el.remove();
+    }
+}
+
+function animateParticles() {
+    particles.forEach(p => {
+        p.life -= 0.01; 
+        p.y -= 0.5; 
+
+        p.el.style.left = p.x + "px";
+        p.el.style.top = p.y + "px";
+        p.el.style.opacity = p.life;
+
+        const scale = 0.7 + p.life * 0.3;
+        p.el.style.transform = `translate(-50%, -50%) scale(${scale}) rotate(${p.rotation}deg)`;
+
+        if (p.life <= 0) {
+            p.el.remove();
+        }
+    });
+
+    particles = particles.filter(p => p.life > 0);
+    requestAnimationFrame(animateParticles);
+}
+animateParticles();
+
+/* =========================
+   EVENT LISTENERS
+========================= */
+const handleMove = (e) => {
+    const x = e.clientX || (e.touches && e.touches[0].clientX);
+    const y = e.clientY || (e.touches && e.touches[0].clientY);
+    
+    if (x && y) {
+        updateMousePositions(x, y);
+        createParticle(x, y);
+    }
+};
+
+document.addEventListener("mousemove", handleMove);
+document.addEventListener("touchmove", handleMove);
+
+/* =========================
+   THUMBNAIL CAROUSEL & MODAL
+========================= */
 const setupInfiniteLoop = () => {
+    if (!thumb) return;
     const items = Array.from(thumb.children);
-    // Clone item ke depan dan belakang
-    items.forEach(item => {
-        const cloneAfter = item.cloneNode(true);
-        thumb.appendChild(cloneAfter);
-    });
-    items.forEach(item => {
-        const cloneBefore = item.cloneNode(true);
-        thumb.prepend(cloneBefore);
-    });
-    // Set posisi awal ke tengah
+    items.forEach(i => thumb.appendChild(i.cloneNode(true)));
+    items.forEach(i => thumb.prepend(i.cloneNode(true)));
     thumb.scrollLeft = thumb.offsetWidth;
 };
 setupInfiniteLoop();
 
 thumb.addEventListener("scroll", () => {
     const maxScroll = thumb.scrollWidth - thumb.clientWidth;
-    if (thumb.scrollLeft <= 0) {
-        thumb.scrollBehavior = "auto";
-        thumb.scrollLeft = thumb.scrollWidth / 3;
-    } else if (thumb.scrollLeft >= maxScroll) {
-        thumb.scrollBehavior = "auto";
+    if (thumb.scrollLeft <= 0 || thumb.scrollLeft >= maxScroll) {
         thumb.scrollLeft = thumb.scrollWidth / 3;
     }
 });
 
-// --- FUNGSI BARU: NAVIGASI PANAH ---
-document.querySelector(".right-btn").addEventListener("click", () => {
-    thumb.scrollBehavior = "smooth";
-    thumb.scrollLeft += 300;
-});
-document.querySelector(".left-btn").addEventListener("click", () => {
-    thumb.scrollBehavior = "smooth";
-    thumb.scrollLeft -= 300;
-});
+document.querySelector(".right-btn").onclick = () => {
+    thumb.scrollTo({ left: thumb.scrollLeft + 400, behavior: 'smooth' });
+};
+document.querySelector(".left-btn").onclick = () => {
+    thumb.scrollTo({ left: thumb.scrollLeft - 400, behavior: 'smooth' });
+};
 
-// --- FUNGSI ASLI: DRAG & CLICK HANDLING ---
-let isDown = false;
-let startX, scrollLeftVal;
-let isDragging = false;
+/* DRAG SYSTEM */
+let isDown = false, startX, scrollL;
 
-thumb.addEventListener("mousedown", (e) => {
+thumb.addEventListener("mousedown", e => {
     isDown = true;
-    isDragging = false;
-    thumb.classList.add("dragging");
-    thumb.scrollBehavior = "auto";
+    thumb.style.scrollBehavior = "auto"; 
     startX = e.pageX - thumb.offsetLeft;
-    scrollLeftVal = thumb.scrollLeft;
+    scrollL = thumb.scrollLeft;
 });
 
-thumb.addEventListener("mouseleave", () => isDown = false);
-thumb.addEventListener("mouseup", () => {
+const endDrag = () => {
     isDown = false;
-    setTimeout(() => { isDragging = false; }, 50);
-    thumb.classList.remove("dragging");
-});
+    thumb.style.scrollBehavior = "smooth";
+};
 
-thumb.addEventListener("mousemove", (e) => {
+thumb.addEventListener("mouseup", endDrag);
+thumb.addEventListener("mouseleave", endDrag);
+
+thumb.addEventListener("mousemove", e => {
     if (!isDown) return;
+    e.preventDefault();
     const x = e.pageX - thumb.offsetLeft;
     const walk = (x - startX) * 1.5;
-    if (Math.abs(walk) > 5) isDragging = true;
-    thumb.scrollLeft = scrollLeftVal - walk;
+    thumb.scrollLeft = scrollL - walk;
 });
 
-// Event Delegation untuk Open Product (supaya clone bisa diklik)
-thumb.addEventListener("click", (e) => {
-    if (isDragging || e.target.tagName !== "IMG") return;
-    const img = e.target;
-    fullImg.src = img.src;
-    fullTitle.innerText = img.getAttribute("data-name");
-    shopBtn.href = img.getAttribute("data-link");
+/* =========================
+   MODAL VIEW (LOGIC COLOR SWITCH)
+========================= */
+thumb.addEventListener("click", e => {
+    if (e.target.tagName !== "IMG") return;
+    
+    fullImg.src = e.target.src;
+    fullTitle.innerText = e.target.dataset.name || "Product Item";
+    shopBtn.href = e.target.dataset.link || "#";
+    
+    // Tampilkan modal
     productView.classList.add("show");
+    
+    // Kunci Perubahan Warna Navbar: Tambah class ke body
+    document.body.classList.add("view-active");
 });
 
-closeBtn.addEventListener("click", () => productView.classList.remove("show"));
+closeBtn.onclick = () => {
+    // Sembunyikan modal
+    productView.classList.remove("show");
+    
+    // Kembalikan warna navbar ke hitam: Hapus class dari body
+    document.body.classList.remove("view-active");
+};

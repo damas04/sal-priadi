@@ -10,7 +10,14 @@
 <body>
 
 <nav class="navbar" id="navbar">
-    <div class="logo"><img src="assets/logo.svg"></div>
+    <div class="logo">
+        <img src="assets/logo.svg" alt="Logo">
+    </div>
+
+    <button class="btn-p" onclick="window.open('https://www.instagram.com/orangpertunjukan/', '_blank')">
+        (p)
+    </button>
+
     <div class="social-media">
         <i class="fab fa-instagram"></i>
         <i class="fab fa-tiktok"></i>
@@ -24,33 +31,31 @@
     <img src="" id="full-img" class="full-bg-img">
     <div class="view-overlay">
         <h2 id="full-title">PRODUCT</h2>
+        <img class="hero-mobile" src="assets/hero-image-mobile.png" alt="">
         <a href="#" target="_blank" class="btn-view-shop" id="shop-btn">Shop Now</a>
     </div>
 </div>
 
 <div class="hero">
     <img src="assets/hero-image.png" class="hero-main">
-    <button class="hero-btn">Shop Now</button>
+    <button class="hero-btn" onclick="window.open('https://toco.id/store/toko-suvenir-priadi', '_blank')">
+        Shop Now
+    </button>
 
     <div class="thumbnail-wrapper">
         <button class="nav-btn left-btn"><i class="fas fa-chevron-left"></i></button>
-        
         <div class="product-thumbnail" id="thumb">
-            <img src="assets/product1.png" data-name="Golden Retriever" data-link="https://tokopedia.com/product1">
-            <img src="assets/product2.png" data-name="White Berhati" data-link="https://tokopedia.com/product2">
-            <img src="assets/product3.png" data-name="Pal Sriadi" data-link="https://tokopedia.com/product3">
-            <img src="assets/product4.png" data-name="Priadi Pizza" data-link="https://tokopedia.com/product4">
-            <img src="assets/product5.png" data-name="Hoodie" data-link="https://tokopedia.com/product5">
+            <img src="assets/product1.png" data-name="Golden Retriever" data-link="https://toco.id/product1">
+            <img src="assets/product2.png" data-name="White Berhati" data-link="https://toco.id/product2">
+            <img src="assets/product3.png" data-name="Pal Sriadi" data-link="https://toco.id/product3">
+            <img src="assets/product4.png" data-name="Priadi Pizza" data-link="https://toco.id/product4">
+            <img src="assets/product5.png" data-name="Hoodie" data-link="https://toco.id/product5">
         </div>
-
         <button class="nav-btn right-btn"><i class="fas fa-chevron-right"></i></button>
     </div>
 </div>
 
-<img src="assets/product1.png" class="layer">
-<img src="assets/product2.png" class="layer">
-<img src="assets/product3.png" class="layer">
-<img src="assets/product4.png" class="layer">
+<div id="trail-container"></div>
 
 <script src="script.js"></script>
 </body>

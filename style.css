@@ -1,36 +1,88 @@
-* { margin: 0; padding: 0; box-sizing: border-box; }
+/* ================================================================
+   1. GLOBAL STYLES & RESET
+   ================================================================ */
+   * { 
+    margin: 0; 
+    padding: 0; 
+    box-sizing: border-box; 
+}
 
 body {
     background: #ffffff;
     overflow: hidden;
     font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
     color: #1a1a1a;
+    transition: background 0.4s ease; /* smooth transition untuk body */
 }
 
-/* NAVBAR */
+/* ================================================================
+   2. NAVBAR & NAVIGATION
+   ================================================================ */
 .navbar {
     position: absolute;
-    top: 0; width: 100%;
+    top: 0; 
+    width: 100%;
     padding: 25px 50px;
     display: flex;
     justify-content: space-between;
     align-items: center;
     z-index: 11000;
-    mix-blend-mode: difference;
 }
+
 .logo img { 
     height: 45px; 
-    filter: brightness(0) invert(1); 
+    filter: brightness(0) invert(0); /* Default Hitam */
     display: block;
+    transition: filter 0.6s ease;
 }
+
+.btn-p {
+    background-color: transparent;
+    border: none;
+    font-size: 1.2rem;
+    color: #000; /* Default Hitam */
+    cursor: pointer;
+    transition: transform 0.3s, color 0.6s ease;
+}
+
+.btn-p:hover { 
+    transform: scale(1.1);
+}
+
 .social-media { 
     display: flex; 
     gap: 12px; 
     font-size: 1.1rem; 
-    color: #ffffff; 
+    color: #000; /* Default Hitam */
+    cursor: pointer;
+    transition: color 0.6s ease;
 }
 
-/* THUMBNAIL WRAPPER & NAV BUTTONS */
+.social-media i:hover { 
+    transform: scale(1.1);
+    transition: 0.3s;
+}
+
+/* ================================================================
+   3. DYNAMIC OVERLAY STATES (Logika Perubahan Warna)
+   ================================================================ */
+/* Selector ini aktif saat class .view-active ada di body */
+
+body.view-active .logo img {
+    filter: brightness(0) invert(1); /* Logo jadi Putih */
+}
+
+body.view-active .social-media {
+    color: #ffffff; /* Icon sosmed jadi Putih */
+}
+
+body.view-active .btn-p {
+    color: #ffffff; /* Button (p) jadi Putih */
+}
+
+/* ================================================================
+   4. THUMBNAIL WRAPPER & NAV BUTTONS
+   ================================================================ */
 .thumbnail-wrapper {
     position: absolute;
     bottom: 40px;
@@ -55,7 +107,12 @@ body {
     margin: 0 15px;
     transition: 0.3s;
 }
-.nav-btn:hover { background: #000; color: #fff; transform: scale(1.1); }
+
+.nav-btn:hover { 
+    background: #000; 
+    color: #fff; 
+    transform: scale(1.1); 
+}
 
 .product-thumbnail {
     display: flex;
@@ -64,15 +121,15 @@ body {
     overflow-x: auto;
     padding: 10px;
     scroll-behavior: smooth;
-    scrollbar-width: none; /* Firefox */
-    -ms-overflow-style: none; /* IE */
+    scrollbar-width: none;
+    -ms-overflow-style: none;
 }
 
-/* Hide Scrollbar Chrome/Safari */
 .product-thumbnail::-webkit-scrollbar { display: none; }
 
 .product-thumbnail img {
-    width: 250px; height: 80px;
+    width: 250px; 
+    height: 80px;
     flex-shrink: 0;
     object-fit: cover;
     filter: grayscale(100%);
@@ -81,45 +138,169 @@ body {
     cursor: pointer;
 }
 
-.product-thumbnail img:hover { filter: grayscale(0%); opacity: 1; transform: scale(1.2); }
+.product-thumbnail img:hover { 
+    filter: grayscale(0%); 
+    opacity: 1; 
+    transform: scale(1.1); 
+}
 
-/* HERO & PRODUCT VIEW */
-.hero { width: 100%; height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
-.hero-main { width: 420px; margin-bottom: 40px; z-index: 100; }
-.hero-btn { padding: 12px 35px; border: 1.5px solid #1a1a1a; background: transparent; font-weight: bold; text-transform: uppercase; cursor: pointer; transition: 0.3s; z-index: 100; }
-.hero-btn:hover { background: #1a1a1a; color: #fff; }
+/* ================================================================
+   5. HERO & PRODUCT VIEW OVERLAY
+   ================================================================ */
+.hero { 
+    width: 100%; 
+    height: 100vh; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+}
 
-#product-view { position: fixed; top: 0; left: 0; width: 100%; height: 100vh; z-index: 2000; opacity: 0; pointer-events: none; transition: 0.6s ease; }
-#product-view.show { opacity: 1; pointer-events: auto; }
-.full-bg-img { position: absolute; width: 100%; height: 100%; object-fit: cover; filter: brightness(0.7); }
-.view-overlay { position: relative; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; }
-.view-overlay h2 { font-size: 4rem; letter-spacing: 8px; margin-bottom: 40px; color: #FF0000; }
-.btn-view-shop { padding: 15px 50px; background: #FF0000; color: #fff; text-decoration: none; font-weight: bold; }
-.btn-view-shop:hover { background: #fff; color: #FF0000; scale: 1.1; transition: 0.3s; }
-.close-view { position: absolute; top: 100px; right: 50px; font-size: 2rem; color: #fff; cursor: pointer; z-index: 2100; }
+.hero-main { 
+    width: 420px; 
+    margin-bottom: 40px; 
+    z-index: 100; 
+}
 
-.layer { position: fixed; top: 0; left: 0; width: 110px; height: 110px; object-fit: cover; pointer-events: none; z-index: 2; opacity: 0; transition: opacity 0.3s ease; }
-.layer.active { opacity: 0.4; }
+.hero-btn { 
+    padding: 12px 35px; 
+    border: 1.5px solid #1a1a1a; 
+    background: transparent; 
+    font-weight: bold; 
+    text-transform: uppercase; 
+    cursor: pointer; 
+    transition: 0.3s; 
+    z-index: 100; 
+}
 
-/* MOBILE */
+.hero-btn:hover { 
+    background: #1a1a1a; 
+    color: #fff; 
+}
+
+.hero-mobile { display: none; }
+
+#product-view { 
+    position: fixed; 
+    top: 0; 
+    left: 0; 
+    width: 100%; 
+    height: 100vh; 
+    z-index: 2000; 
+    opacity: 0; 
+    pointer-events: none; 
+    transition: 0.6s ease; 
+}
+
+#product-view.show { 
+    opacity: 1; 
+    pointer-events: auto; 
+}
+
+.full-bg-img { 
+    position: absolute; 
+    width: 100%; 
+    height: 100%; 
+    object-fit: cover; 
+    filter: brightness(0.5); 
+}
+
+.view-overlay { 
+    position: relative; 
+    height: 100%; 
+    display: flex; 
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    color: #fff; 
+}
+
+.view-overlay h2 { 
+    font-size: 4rem; 
+    letter-spacing: 8px; 
+    margin-bottom: 40px; 
+    color: #FF0000; 
+}
+
+.btn-view-shop { 
+    padding: 15px 50px; 
+    background: #FF0000; 
+    color: #fff; 
+    text-decoration: none; 
+    font-weight: bold; 
+}
+
+.btn-view-shop:hover { 
+    background: #fff; 
+    color: #FF0000; 
+    transform: scale(1.1); 
+    transition: 0.3s; 
+}
+
+.close-view { 
+    position: absolute; 
+    top: 100px; 
+    right: 50px; 
+    font-size: 2rem; 
+    color: #fff; 
+    cursor: pointer; 
+    z-index: 2100; 
+}
+
+/* ================================================================
+   6. TRAIL IMAGE SYSTEM
+   ================================================================ */
+#trail-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    z-index: 50;
+    overflow: hidden;
+}
+
+.trail-img {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    transform: translate(-50%, -50%);
+    will-change: transform, opacity;
+}
+
+/* ================================================================
+   7. MOBILE RESPONSIVE
+   ================================================================ */
 @media (max-width: 768px) {
     .nav-btn { display: none; }
     .navbar {
         padding: 10px 20px;
-        justify-content: space-between
-    }
-    .product-thumbnail { width: 100%; padding: 10px 20px; }
-    .product-thumbnail img { width: 120px; height: 70px; }
-    .view-overlay h2 {
-        font-size: 2.5rem;
-        letter-spacing: 4px;
-        text-align: center;
-    }
-    .hero-main {
-        width: 250px;
-        margin-bottom: 30px;
-        margin-top: -100px;
-    
+        justify-content: space-between;
     }
 
+    .logo img { 
+        height: 35px; 
+    }
+
+    .social-media { 
+        color: #000; /* Kembali ke hitam default mobile */
+        font-size: 16px;
+        gap: 10px;
+    }
+
+    /* Override sosmed mobile saat overlay aktif */
+    body.view-active .social-media {
+        color: #ffffff;
+    }
+    
+    .product-thumbnail { width: 100%; padding: 10px 20px; }
+    .product-thumbnail img { width: 120px; height: 70px; }
+    .view-overlay h2 { display: none; }
+    .hero-main { width: 250px; margin-top: -100px; }
+    .hero-mobile { display: block; width: 300px;  }
+    .btn-view-shop {
+        margin-top: 100px;
+    }
 }
