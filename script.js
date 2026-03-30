@@ -92,10 +92,12 @@ function createParticle(x, y) {
     img.className = "trail-img";
     img.src = getNextImage();
 
-    const heightSize = 230; 
-    img.style.height = heightSize + "px";
-    img.style.width = "auto"; 
-    img.style.objectFit = "contain"; 
+    const widthSize = 15; 
+    
+    const heightSize = 20; 
+    img.style.height = heightSize + "rem";
+    img.style.width = widthSize + "rem";
+    img.style.objectFit = "cover"; 
 
     const rotation = (Math.random() - 0.5) * 0;
     
