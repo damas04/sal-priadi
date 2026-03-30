@@ -289,7 +289,7 @@ body.view-active .btn-p {
     .social-media { 
         color: #000; /* Kembali ke hitam default mobile */
         font-size: 16px;
-        gap: 10px;
+        gap: 5px;
     }
 
     /* Override sosmed mobile saat overlay aktif */
