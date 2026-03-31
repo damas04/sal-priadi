@@ -62,10 +62,16 @@ animateLayers();
    PARTICLE TRAIL (OPTIMIZED)
 ========================= */
 const images = [
-    "assets/product1.png",
-    "assets/product2.png",
-    "assets/product3.png",
-    "assets/product4.png"
+    "assets/trail1.jpg",
+    "assets/trail2.jpg",
+    "assets/trail3.jpg",
+    "assets/trail4.jpg",
+    "assets/trail5.jpg",
+    "assets/trail6.jpg",
+    "assets/trail7.jpg",
+    "assets/trail8.jpg",
+    "assets/trail9.jpg",
+    "assets/trail10.jpg"
 ];
 
 let particles = [];
