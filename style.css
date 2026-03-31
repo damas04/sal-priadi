@@ -225,15 +225,17 @@ body.view-active .btn-p {
 
 .btn-view-shop { 
     padding: 15px 50px; 
-    background: #FF0000; 
-    color: #fff; 
+    background: #ffffff; 
+    color: #000; 
+    border: 1.5px solid #1a1a1a; 
+    cursor: pointer;
+    transition: 0.3s;
     text-decoration: none; 
     font-weight: bold; 
 }
 
 .btn-view-shop:hover { 
-    background: #fff; 
-    color: #FF0000; 
+    
     transform: scale(1.1); 
     transition: 0.3s; 
 }
